@@ -170,3 +170,86 @@ if submitted:
             file_name=f"checklist_{placa_prefixo}_{data_inspecao}.csv",
             mime="text/csv"
         )
+        import streamlit as st
+import pandas as pd
+from datetime import datetime
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+# --- FUNÇÃO PARA ENVIAR E-MAIL VIA SMTP ---
+def enviar_email(dados_gerais, df_respostas, destinatario="alessandra.nascimento@ellenco.com.br"):
+    try:
+        # Configurações do servidor SMTP (usando os secrets do Streamlit)
+        remetente = st.secrets["email"]["usuario"]
+        senha = st.secrets["email"]["senha"]
+        servidor_smtp = st.secrets["email"]["smtp_server"]
+        porta = st.secrets["email"]["porta"]
+
+        # Criação da mensagem
+        msg = MIMEMultipart()
+        msg["From"] = remetente
+        msg["To"] = destinatario
+        msg["Subject"] = f"Checklist {dados_gerais['Equipamento']} - Prefixo: {dados_gerais['Prefixo/Placa']} ({dados_gerais['Data']})"
+
+        # Corpo do E-mail em HTML
+        corpo_html = f"""
+        <h2>📋 Registro de Checklist de Pavimentação</h2>
+        <p><b>Data:</b> {dados_gerais['Data']}</p>
+        <p><b>Operador:</b> {dados_gerais['Operador']}</p>
+        <p><b>Obra/Trecho:</b> {dados_gerais['Obra']}</p>
+        <p><b>Equipamento:</b> {dados_gerais['Equipamento']}</p>
+        <p><b>Prefixo/Placa:</b> {dados_gerais['Prefixo/Placa']}</p>
+        <p><b>Horímetro:</b> {dados_gerais['Horímetro']}</p>
+        <p><b>Observações:</b> {dados_gerais['Observações']}</p>
+        <hr>
+        <h3>Itens Verificados</h3>
+        {df_respostas.to_html(index=False, border=1)}
+        """
+        
+        msg.attach(MIMEText(corpo_html, "html"))
+
+        # Conexão e envio
+        with smtplib.SMTP(servidor_smtp, porta) as server:
+            server.starttls()
+            server.login(remetente, senha)
+            server.sendmail(remetente, destinatario, msg.as_string())
+            
+        return True, "E-mail enviado com sucesso!"
+    except Exception as e:
+        return False, f"Falha ao enviar e-mail: {str(e)}"
+
+# --- PROCESSAMENTO DO FORMULÁRIO ---
+# Adicione ou substitua dentro do bloco 'if submitted:'
+if submitted:
+    if not operador or not obra_trecho or not placa_prefixo:
+        st.error("⚠️ Por favor, preencha o Nome do Operador, Obra/Trecho e Prefixo do Equipamento na barra lateral.")
+    else:
+        dados_gerais = {
+            "Data": data_inspecao.strftime("%d/%m/%Y"),
+            "Operador": operador,
+            "Obra": obra_trecho,
+            "Equipamento": equipamento,
+            "Prefixo/Placa": placa_prefixo,
+            "Horímetro": horimetro,
+            "Observações": observacoes
+        }
+        
+        df_respostas = pd.DataFrame(
+            list(respostas.items()), 
+            columns=["Item Verificado", "Status"]
+        )
+
+        # Tenta enviar o e-mail
+        with st.spinner("Enviando formulário por e-mail..."):
+            sucesso, mensagem = enviar_email(dados_gerais, df_respostas, "alessandra.nascimento@ellenco.com.br")
+
+        if sucesso:
+            st.success(f"✅ Checklist registrado e enviado para **alessandra.nascimento@ellenco.com.br**!")
+        else:
+            st.warning(f"⚠️ Registro salvo localmente, mas não foi possível enviar o e-mail: {mensagem}")
+
+        # Resumo na Tela
+        st.markdown("### 📄 Resumo da Inspeção")
+        st.dataframe(df_respostas, use_container_width=True)
+        
