@@ -1,2 +1,2 @@
-# POC-Checklist-M-quinas-e-Equipamentos
+# POC-Checklist-Máquinas-e-Equipamentos
 Checklist Máquinas e Equipamentos
