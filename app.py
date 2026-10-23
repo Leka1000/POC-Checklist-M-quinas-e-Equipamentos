@@ -31,7 +31,8 @@ st.subheader("📋 Informações Gerais")
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    local_servico = st.text_input("Local do Serviço:")
+    # Campo Local do Serviço fixado com "OBRA LIVIO" (com opção de alteração se necessário)
+    local_servico = st.text_input("Local do Serviço:", value="OBRA LIVIO")
     
     tipo_selecao_id = st.radio("Como deseja informar o equipamento?", ["Escolher Prefixo", "Digitar Personalizado"])
     if tipo_selecao_id == "Escolher Prefixo":
