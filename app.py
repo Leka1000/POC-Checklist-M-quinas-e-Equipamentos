@@ -47,10 +47,9 @@ with col3:
     periodicidade = st.text_input("Periodicidade da Inspeção:", value="Mensal")
     cor_liberacao = st.selectbox(
         "Cor correspondente à liberação:",
-        ["Verde", "Amarelo", "Brancoo", "Azul", "Outra"]
+        ["Verde", "Amarelo", "Vermelho", "Azul", "Outra"]
     )
 
 st.markdown("---")
 
-# --- DEFINIÇÃO DOS ITENS POR EQUIPAMENTO EM ORDEM NUMÉRICA CORRETA ---
-if equipamento_selecionado == "Caminhão Basculante":
+# --- BASE DE DADOS DOS ITENS DE INSPEÇÃO ---
