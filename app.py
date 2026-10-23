@@ -44,7 +44,7 @@ with col3:
     periodicidade = st.text_input("Periodicidade da Inspeção:", value="Mensal")
     cor_liberacao = st.selectbox(
         "Cor correspondente à liberação:",
-        ["Verde", "Amarelo", "Branco", "Azul", "Outra"]
+        ["Verde", "Amarelo", "Vermelho", "Azul", "Outra"]
     )
 
 st.markdown("---")
@@ -101,4 +101,4 @@ if equipamento_selecionado == "Caminhão Basculante":
         "47. Calços em condições de uso e quantidade suficiente?"
     ]
 
-elif equipamento_selecionado == "Caminhão Carroceria - Cabine Complement
+elif equipamento_
