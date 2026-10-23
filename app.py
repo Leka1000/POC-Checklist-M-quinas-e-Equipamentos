@@ -47,7 +47,7 @@ with col3:
     periodicidade = st.text_input("Periodicidade da Inspeção:", value="Mensal")
     cor_liberacao = st.selectbox(
         "Cor correspondente à liberação:",
-        ["Verde", "Amarelo", "Vermelho", "Azul", "Outra"]
+        ["Verde", "Amarelo", "Branco", "Azul", "Outra"]
     )
 
 st.markdown("---")
