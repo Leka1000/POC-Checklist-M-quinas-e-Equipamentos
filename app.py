@@ -342,8 +342,8 @@ if submitted:
             st.info(f"O relatório foi salvo em: **{caminho_csv}**")
 
             # --- ENVIO AUTOMÁTICO POR E-MAIL ---
-            EMAIL_REMETENTE = "seu_email@gmail.com"  # Substitua pelo seu e-mail do Gmail
-            SENHA_APLICATIVO = "sua_senha_de_app"      # Substitua pela sua senha de aplicativo do Gmail
+            EMAIL_REMETENTE = "seu_email_real@gmail.com"  # O seu e-mail do Gmail
+            SENHA_APLICATIVO = "abcd1234efgh5678"         # A senha de aplicativo de 16 dígitos gerada no Google
             EMAIL_DESTINO = "lekaolinascimento@gmail.com"
 
             try:
