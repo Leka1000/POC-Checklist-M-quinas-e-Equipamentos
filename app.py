@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 from datetime import date
 import os
+from PIL import Image
+from streamlit_drawable_canvas import st_canvas
 
 # Configuração da página
 st.set_page_config(
@@ -205,12 +207,13 @@ CHECKLISTS = {
 
 itens_checklist = CHECKLISTS[equipamento_selecionado]
 opcoes_status = ["ATENDE", "ATENDE PARCIAL", "NÃO ATENDE", "NÃO SE APLICA"]
-respostas = []
 
 st.subheader(f"📝 Itens de Inspeção: {equipamento_selecionado}")
 
 # --- FORMULÁRIO INTERATIVO ---
 with st.form("form_checklist"):
+    respostas_temporarias = []
+    
     for idx, item in enumerate(itens_checklist):
         st.markdown(f"**{item}**")
         col_opt, col_obs = st.columns([2, 3])
@@ -219,7 +222,7 @@ with st.form("form_checklist"):
             status = st.radio(
                 "Status",
                 opcoes_status,
-                key=f"status_{idx}",
+                key=f"status_{equipamento_selecionado}_{idx}",
                 horizontal=True,
                 label_visibility="collapsed"
             )
@@ -227,78 +230,121 @@ with st.form("form_checklist"):
         with col_obs:
             obs = st.text_input(
                 "Observações",
-                key=f"obs_{idx}",
+                key=f"obs_{equipamento_selecionado}_{idx}",
                 placeholder="Observações adicionais..."
             )
         
-        respostas.append({
-            "Local": local_servico,
-            "Equipamento": equipamento_selecionado,
-            "ID/Prefixo": id_equipamento,
-            "Nº / Descrição": item,
-            "Status": status,
-            "Observações": obs
+        respostas_temporarias.append({
+            "item_idx": idx,
+            "descricao": item,
+            "status_key": f"status_{equipamento_selecionado}_{idx}",
+            "obs_key": f"obs_{equipamento_selecionado}_{idx}"
         })
         st.markdown("<hr style='margin:5px 0;'>", unsafe_allow_html=True)
 
     st.subheader("📌 Recomendações e Observações Gerais")
-    recomendacoes = st.text_area("Insira recomendações ou observações gerais:")
+    recomendacoes = st.text_area("Insira recomendações ou observações gerais:", key="rec_geral")
     
     st.subheader("✍️ Assinaturas e Responsáveis")
     col_resp1, col_resp2 = st.columns(2)
     with col_resp1:
-        resp_inspecao = st.text_input("Responsável pela Inspeção (Nome / Assinatura):")
+        resp_inspecao = st.text_input("Responsável pela Inspeção (Nome):", key="resp_insp")
     with col_resp2:
-        resp_equipamento = st.text_input("Responsável pelo Equipamento (Nome / Assinatura):")
+        resp_equipamento = st.text_input("Responsável pelo Equipamento (Nome):", key="resp_eqp")
+
+    # --- Bloco de Assinatura Digital (Canvas) ---
+    st.markdown("#### 🖊️ Assinatura Digital do Inspetor")
+    st.markdown("Utilize o campo abaixo para desenhar a sua assinatura:")
+    
+    canvas_result = st_canvas(
+        fill_color="rgba(255, 165, 0, 0.3)",
+        stroke_width=2,
+        stroke_color="#000000",
+        background_color="#FFFFFF",
+        height=150,
+        width=500,
+        drawing_mode="freedraw",
+        key=f"canvas_assinatura_{equipamento_selecionado}",
+    )
 
     st.markdown("---")
     st.subheader("💾 Opções de Salvamento")
     
     diretorio_customizado = st.text_input(
         "Caminho da pasta onde deseja salvar o arquivo (ex: C:/Checklists ou deixar em branco para usar a pasta padrão):",
-        value=""
+        value="",
+        key="dir_custom"
     )
 
     submitted = st.form_submit_button("Gerar e Salvar Check List")
 
-# --- PROCESSAR E SALVAR OS DADOS ---
+# --- PROCESSAR E SALVAR OS DADOS APÓS O SUBMIT ---
 if submitted:
-    df_respostas = pd.DataFrame(respostas)
-    
-    df_respostas["Recomendações Gerais"] = recomendacoes
-    df_respostas["Responsável Inspeção"] = resp_inspecao
-    df_respostas["Responsável Equipamento"] = resp_equipamento
-    
-    if diretorio_customizado.strip() == "":
-        pasta_destino = "historico_checklists"
+    if not resp_inspecao.strip() or not resp_equipamento.strip():
+        st.warning("⚠️ Por favor, preencha os nomes dos responsáveis antes de gerar o relatório.")
     else:
-        pasta_destino = diretorio_customizado.strip()
-        
-    try:
-        os.makedirs(pasta_destino, exist_ok=True)
-        
-        nome_equipamento_limpo = str(id_equipamento).replace(" ", "_").replace("/", "-")
-        if not nome_equipamento_limpo:
-            nome_equipamento_limpo = "geral"
+        # Monta a lista oficial de respostas lendo diretamente dos estados dos widgets
+        respostas_finais = []
+        for item_info in respostas_temporarias:
+            status_atual = st.session_state.get(item_info["status_key"], "ATENDE")
+            obs_atual = st.session_state.get(item_info["obs_key"], "")
             
-        nome_arquivo = f"checklist_{equipamento_selecionado.replace(' ', '_')}_{nome_equipamento_limpo}_{data_inspecao}.csv"
-        caminho_completo = os.path.join(pasta_destino, nome_arquivo)
+            respostas_finais.append({
+                "Local": local_servico,
+                "Equipamento": equipamento_selecionado,
+                "ID/Prefixo": id_equipamento,
+                "Nº / Descrição": item_info["descricao"],
+                "Status": status_atual,
+                "Observações": obs_atual,
+                "Recomendações Gerais": recomendacoes,
+                "Responsável Inspeção": resp_inspecao,
+                "Responsável Equipamento": resp_equipamento,
+                "Data da Inspeção": str(data_inspecao),
+                "Revisão": revisao,
+                "Periodicidade": periodicidade,
+                "Cor Liberação": cor_liberacao
+            })
+
+        df_respostas = pd.DataFrame(respostas_finais)
         
-        df_respostas.to_csv(caminho_completo, index=False, encoding='utf-8-sig')
-        
-        st.success("Check List preenchido e guardado com sucesso!")
-        st.info(f"O arquivo foi salvo em: **{caminho_completo}**")
-        
-        st.subheader("📊 Resumo das Respostas")
-        st.dataframe(df_respostas, use_container_width=True)
-        
-        csv_data = df_respostas.to_csv(index=False).encode('utf-8-sig')
-        st.download_button(
-            label="📥 Descarregar Cópia Extra (CSV)",
-            data=csv_data,
-            file_name=nome_arquivo,
-            mime='text/csv'
-        )
-        
-    except Exception as e:
-        st.error(f"Erro ao tentar salvar o arquivo na pasta indicada: {e}")
+        if diretorio_customizado.strip() == "":
+            pasta_destino = "historico_checklists"
+        else:
+            pasta_destino = diretorio_customizado.strip()
+            
+        try:
+            os.makedirs(pasta_destino, exist_ok=True)
+            
+            nome_equipamento_limpo = str(id_equipamento).replace(" ", "_").replace("/", "-")
+            if not nome_equipamento_limpo:
+                nome_equipamento_limpo = "geral"
+                
+            nome_base = f"checklist_{equipamento_selecionado.replace(' ', '_')}_{nome_equipamento_limpo}_{data_inspecao}"
+            caminho_csv = os.path.join(pasta_destino, f"{nome_base}.csv")
+            
+            # Salva o arquivo CSV
+            df_respostas.to_csv(caminho_csv, index=False, encoding='utf-8-sig')
+            
+            # Salva a assinatura digital como imagem PNG se o usuário desenhou algo
+            if canvas_result.image_data is not None:
+                img = Image.fromarray(canvas_result.image_data.astype('uint8'))
+                caminho_img = os.path.join(pasta_destino, f"{nome_base}_assinatura.png")
+                img.save(caminho_img)
+                st.success(f"✅ Assinatura salva com sucesso em: **{caminho_img}**")
+
+            st.success("✅ Check List preenchido e guardado com sucesso!")
+            st.info(f"O relatório foi salvo em: **{caminho_csv}**")
+            
+            st.subheader("📊 Resumo das Respostas")
+            st.dataframe(df_respostas, use_container_width=True)
+            
+            csv_data = df_respostas.to_csv(index=False).encode('utf-8-sig')
+            st.download_button(
+                label="📥 Descarregar Cópia Extra (CSV)",
+                data=csv_data,
+                file_name=f"{nome_base}.csv",
+                mime='text/csv'
+            )
+            
+        except Exception as e:
+            st.error(f"Erro ao tentar salvar o arquivo na pasta indicada: {e}")
