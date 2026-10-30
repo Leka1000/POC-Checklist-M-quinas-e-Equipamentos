@@ -60,4 +60,4 @@ with col3:
 st.markdown("---")
 
 # --- BASE DE DADOS DOS ITENS DE INSPEÇÃO ---
-CHECKLIST
+CHECKLISTS
