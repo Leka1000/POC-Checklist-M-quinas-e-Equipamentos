@@ -54,7 +54,7 @@ if submitted:
             st.success("✅ Check List preenchido e guardado com sucesso!")
             st.info(f"O relatório foi salvo em: **{caminho_csv}**")
 
-            # --- ENVIO AUTOMÁTICO POR E-MAIL ---
+           # --- ENVIO AUTOMÁTICO POR E-MAIL ---
             # ATENÇÃO: Para enviar via código Python, você precisa configurar um e-mail remetente e uma senha de aplicativo.
             EMAIL_REMETENTE = "seu_email@gmail.com"  # Substitua pelo seu e-mail do Gmail
             SENHA_APLICATIVO = "sua_senha_de_app"      # Substitua pela sua senha de aplicativo do Gmail
@@ -66,7 +66,7 @@ if submitted:
                 msg['To'] = EMAIL_DESTINO
                 msg['Subject'] = f"Check List Concluído - {equipamento_selecionado} ({id_equipamento})"
 
-                 corpo = f"Olá,\n\nSegue em anexo o relatório do Check List Mensal referente ao equipamento {equipamento_selecionado} (ID: {id_equipamento}), realizado em {data_inspecao}.\n\nAtenciosamente,\nSistema de Check List"
+                corpo = f"Olá,\n\nSegue em anexo o relatório do Check List Mensal referente ao equipamento {equipamento_selecionado} (ID: {id_equipamento}), realizado em {data_inspecao}.\n\nAtenciosamente,\nSistema de Check List"
                 msg.attach(MIMEText(corpo, 'plain'))
 
                 # Anexa o CSV
@@ -98,16 +98,12 @@ if submitted:
             except Exception as email_err:
                 st.warning(f"⚠️ O checklist foi salvo localmente, mas houve um erro ao enviar o e-mail automático: {email_err}")
 
-            st.subheader("📊 Resumo das Respostas")
-            st.dataframe(df_respostas, use_container_width=True)
-            
-            csv_data = df_respostas.to_csv(index=False).encode('utf-8-sig')
-            st.download_button(
-                label="📥 Descarregar Cópia Extra (CSV)",
-                data=csv_data,
-                file_name=f"{nome_base}.csv",
-                mime='text/csv'
-            )
-            
-        except Exception as e:
-            st.error(f"Erro ao tentar salvar o arquivo na pasta indicada: {e}")
+            try:
+                msg = MIMEMultipart()
+                msg['From'] = EMAIL_REMETENTE
+                msg['To'] = EMAIL_DESTINO
+                msg['Subject'] = f"Check List Concluído - {equipamento_selecionado} ({id_equipamento})"
+
+                 corpo = f"Olá,\n\nSegue em anexo o relatório do Check List Mensal referente ao equipamento {equipamento_selecionado} (ID: {id_equipamento}), realizado em {data_inspecao}.\n\nAtenciosamente,\nSistema de Check List"
+                msg.attach(MIMEText(corpo, 'plain'))
+              
