@@ -269,9 +269,10 @@ with st.form("form_checklist"):
         height=150,
         width=500,
         drawing_mode="freedraw",
+        return_image_data=True,  # <--- ADICIONE ESTA LINHA AQUI
         key=f"canvas_assinatura_{equipamento_selecionado}",
     )
-
+    
     st.markdown("---")
     st.subheader("💾 Opções de Salvamento")
     
