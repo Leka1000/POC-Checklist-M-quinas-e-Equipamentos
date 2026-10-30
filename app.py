@@ -29,8 +29,6 @@ if modo_consulta:
     
     if os.path.exists(caminho_consolidado):
         df_historico = pd.read_excel(caminho_consolidado)
-        
-        # Converte a coluna de data para o formato datetime para permitir filtros precisos
         df_historico["Data"] = pd.to_datetime(df_historico["Data"]).dt.date
         
         col_f1, col_f2, col_f3 = st.columns(3)
@@ -41,7 +39,6 @@ if modo_consulta:
         with col_f3:
             equip_filtro = st.selectbox("Filtrar Equipamento:", ["Todos"] + list(df_historico["Equipamento"].unique()))
             
-        # Aplica os filtros
         df_filtrado = df_historico[(df_historico["Data"] >= data_inicio) & (df_historico["Data"] <= data_fim)]
         
         if equip_filtro != "Todos":
@@ -50,7 +47,6 @@ if modo_consulta:
         st.markdown(f"**Total de registros encontrados no período:** {len(df_filtrado)}")
         st.dataframe(df_filtrado, use_container_width=True)
         
-        # Botão para extrair/baixar apenas os dados filtrados em Excel
         output_filtro = io.BytesIO()
         with pd.ExcelWriter(output_filtro, engine='openpyxl') as writer:
             df_filtrado.to_excel(writer, sheet_name="Filtro_Periodo", index=False)
@@ -158,4 +154,53 @@ else:
             "46. Testes instrumentados ou procedimentos específicos do sistema de frenagem foram realizados quando requeridos?",
             "47. Calços em condições de uso e quantidade suficiente?"
         ],
-        "C
+        "Caminhão Carroceria - Cabine Complementar": [
+            "1. CRLV-e, documentos de operação, inspeções e exigências aplicáveis foram conferidos?",
+            "2. Manual, identificação do modelo, modificações e plano de manutenção estão atualizados?",
+            "3. Lotação e condições do projeto de transporte de passageiros estão regularizadas?",
+            "4. Histórico de manutenção preventiva e corretiva está atualizado, com OS encerradas e evidências?",
+            "5. As recomendações do fabricante por quilometragem/tempo estão atendidas e rastreadas?",
+            "6. Identificação do veículo, placas, faixas e sinalização foram conferidas quanto à integridade?",
+            "7. Os calços são compatíveis com pneus, massa, solo e procedimento de imobilização?",
+            "8. Circuitos, suportes, iluminação, relés e lanternas foram inspecionados?",
+            "9. Buzina e alarme de ré foram submetidos a teste funcional controlado?",
+            "10. Câmera, monitor, fiação, fixação e imagem foram inspecionados e testados?",
+            "11. O sensor de presença foi testado em procedimento controlado e teve calibração/posicionamento conferidos?",
+            "12. Giroflex, fixações e alimentação elétrica foram avaliados?",
+            "13. Estrobo, fixações e alimentação elétrica foram avaliados?",
+            "14. Registros, aferição/regularidade do registrador de velocidade foram conferidos?",
+            "15. Dispositivos de advertência de marcha à ré tiveram resultado de ensaio controlado registrado?",
+            "16. Sistema de freios, componentes, indicadores e ensaios previstos foram conferidos?",
+            "17. Pneus, sulcos, pressão, aros, fixações e reapertos foram avaliados conforme fabricante?",
+            "18. Chassi, longarinas, suportes, fixações e soldas estão íntegros, sem reparos irregulares?",
+            "19. Foram identificadas e tratadas fugas nos sistemas de combustível, lubrificação, ar e arrefecimento?",
+            "20. Extintores e demais meios de emergência foram inspecionados, incluindo fixações e manutenção?",
+            "21. Equipamentos de emergência, estepe e ferramentas estão completos e adequados, quando exigidos?",
+            "22. Retrovisores, regulagens, fechaduras, vedações e vidros foram avaliados detalhadamente?",
+            "23. Longarinas, piso, fixadores e pontos de ancoragem foram inspecionados?",
+            "24. Escada, piso, guarda-corpo e sistema de proteção contra quedas foram examinados?",
+            "25. Cintas, correntes, catracas e ancoragens têm identificação e capacidade compatíveis?",
+            "26. Suspensão, molas, amortecedores, buchas e suportes apresentam integridade e folgas aceitáveis?",
+            "27. Terminais de direção, barras e articulações foram avaliados quanto a desgaste e fixação?",
+            "28. Linhas e reservatórios pneumáticos/hidráulicos de freio estão íntegros, com drenagem e ensaios previstos?",
+            "29. Fixação de cabine ao chassi e respectivos suportes/coxins estão íntegros?",
+            "30. Sistema de exaustão, suportes e proteção contra aquecimento indevido estão íntegros?",
+            "31. Bateria, chicotes, terminais e proteções elétricas estão íntegros, sem improvisações?",
+            "32. Bujões, reservatórios e tampas estão íntegros e identificados, sem vestígios de vazamento?",
+            "33. Há evidência de torque/reaperto de fixadores críticos quando previsto em manutenção?",
+            "34. Cinto, ancoragem, fecho e retrator foram inspecionados?",
+            "35. Bancos, suportes, pedais, ergonomia e interferências nos comandos foram avaliados?",
+            "36. Sistema de limpador, esguichos, braços e palhetas foram testados?",
+            "37. Fixação e ancoragem dos cintos e bancos foram avaliadas e documentadas?",
+            "38. Projeto/homologação, ancoragens, estrutura e fixações da cabine complementar foram verificados?",
+            "39. Ancoragens, cintos, bancos e encostos de cabeça foram inspecionados?",
+            "40. Sistema de intercomunicação, acionamento e indicadores foram testados?",
+            "41. Saída de emergência, abertura e identificação foram avaliadas?",
+            "42. Fechaduras, travas e vedações da cabine complementar foram inspecionadas?",
+            "43. Documentos de transformação/homologação da cabine complementar foram revisados?",
+            "44. Suportes estruturais e fixadores da cabine complementar foram inspecionados?",
+            "45. Falhas, sensores, mensagens do painel e histórico diagnóstico foram verificados?",
+            "46. Freio de estacionamento, acionamento e condição de retenção foram inspecionados?",
+            "47. Direção, articulações, transmissão e folgas foram avaliadas?",
+            "48. O veículo possui calços em condições e quantidade suficientes?"
+        ],
