@@ -111,4 +111,5 @@ CHECKLISTS = {
         "29. Cobertura, acionamentos e fixações foram conferidos?",
         "30. Suspensão, molas, amortecedores, buchas, suportes, terminais de direção, barras e articulações foram avaliados?",
         "31. Linhas e reservatórios pneumáticos/hidráulicos de freio estão íntegros, com drenagem e ensaios previstos?",
-        "32. Fixação de cab
+        "32. Fixação de cabine ao chassi e respectivos suportes/coxins estão íntegros?",
+        "33. Sistema de exaustão, suport
