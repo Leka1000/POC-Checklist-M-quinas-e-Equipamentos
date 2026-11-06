@@ -167,4 +167,195 @@ CHECKLISTS = {
         "1. Manuais, modificações autorizadas e plano de manutenção estão disponíveis e atualizados?",
         "2. Histórico de manutenção por horímetro, pendências e correções está atualizado?",
         "3. Periodicidade de inspeções técnicas indicada pelo fabricante está atendida?",
-        "4. Identificação, fa
+        "4. "
+        "Identificação, faixas, avisos e símbolos estão completos e íntegros?",
+        "5. "
+        "Estrutura, suportes, soldas e fixações foram inspecionados quanto a trincas/deformações?",
+        "6. ROPS/FOPS, ancoragens e ausência de alterações não autorizadas foram conferidos?",
+        "7. Tubulações, retentores, conexões, reservatórios e eventuais vazamentos foram avaliados?",
+        "8. Proteções, suportes e intertravamentos foram avaliados quanto à integridade?",
+        "9. Extintor e/ou medidas de combate a incêndio foram verificados quanto à adequação?",
+        "10. Tensão, roletes, pneus/esteiras, rodas e fixadores foram avaliados?",
+        "11. Acoplador, pinos, travas, soldas, dentes e travamento foram inspecionados?",
+        "12. Braços, articulações, buchas e suportes foram avaliados?",
+        "13. Trava de sustentação e instruções de bloqueio estão íntegras e identificadas?",
+        "14. Fixadores estruturais, soldas e pontos de apoio foram inspecionados quanto a deformações?",
+        "15. "
+        "Pontos de lubrificação, mancais, buchas e pinos foram avaliados quanto à lubrificação e folgas?",
+        "16. Coifas, chapas e proteções de partes móveis foram avaliadas quanto à fixação e resistência?",
+        "17. Instalação elétrica, bateria, proteção dos chicotes e conexões foram verificadas?",
+        "18. Instrumentação, alertas e eventuais códigos de falha foram avaliados?",
+        "19. Mangueiras hidráulicas foram avaliadas por abrasão, dobramento, idade/condição e retenções?",
+        "20. Filtro de ar, refrigeração, correias e ventiladores foram verificados pelo plano do fabricante?",
+        "21. Pontos de ancoragem ou suporte para manutenção do implemento estão íntegros?",
+        "22. Engate rápido e retenção contra desprendimento foram auditados?",
+        "23. Degraus, superfícies antiderrapantes, corrimãos, soldas e fixações foram inspecionados?",
+        "24. Vidros, espelhos, suportes, ajustes e visibilidade foram conferidos?",
+        "25. Ancoragem, retrator, fecho, costuras e regulagem do cinto foram examinados?",
+        "26. "
+        "Assento, mecanismos de regulagem, fixações, vedações e condições ergonômicas foram avaliados?",
+        "27. Sistema de climatização e desembaçamento foi avaliado frente à NR-18 e à configuração?",
+        "28. Sensores de ocupação, barra de retenção e lógica de intertravamento foram testados?",
+        "29. Ancoragens do banco/cinto e elementos de cabine foram examinados quanto a folgas?",
+        "30. Alarme de ré e buzina foram testados quanto ao funcionamento e audibilidade?",
+        "31. Instalação e funcionamento dos sistemas de iluminação foram inspecionados?",
+        "32. Câmera, monitor e cabeamento foram submetidos a teste funcional?",
+        "33. Detecção, indicação e instalação do sensor foram testadas?",
+        "34. Giroflex, fixação e alimentação elétrica foram avaliados?",
+        "35. Estrobo, fixação e alimentação elétrica foram avaliados?",
+        "36. Motor, suportes, ruídos, vazamentos e sistema de arrefecimento foram examinados?",
+        "37. Circuitos de segurança, partida e travamentos hidráulicos foram testados?",
+        "38. Chaves gerais, sistemas de intertravamento e bloqueio elétrico estão identificados e íntegros?",
+        "39. "
+        "Foram registrados resultados de testes controlados de sensores/alertas e dos dispositivos corporativos aplicáveis?",
+        "40. Foi ensaiada a lógica de segurança de barra de retenção/ocupação segundo instruções do fabricante?",
+        "41. Sistemas de freio, retenção e acionamentos foram submetidos a testes controlados?",
+        "42. Comandos, intertravamentos e sistemas de direção/transmissão foram inspecionados?",
+        "43. Controle de elevação, retenção e resposta dos cilindros foram testados?",
+        "44. Sistema de engate rápido foi testado conforme fabricante?",
+        "45. A direção, freios, transmissão e comandos foram avaliados com registros de ensaio quando previstos?",
+        "46. Sistema de estacionamento, desligamento e bloqueio de acionamento indevido foi inspecionado?"
+    ]
+}
+
+itens_checklist = CHECKLISTS[equipamento_selecionado]
+opcoes_status = ["ATENDE", "ATENDE PARCIAL", "NÃO ATENDE", "NÃO SE APLICA"]
+
+st.subheader(f"📝 Itens de Inspeção: {equipamento_selecionado}")
+
+# --- FORMULÁRIO INTERATIVO ---
+with st.form("form_checklist"):
+    respostas_temporarias = []
+
+    for idx, item in enumerate(itens_checklist):
+        st.markdown(f"**{item}**")
+        col_opt, col_obs = st.columns([2, 3])
+
+        with col_opt:
+            status = st.radio(
+                "Status",
+                opcoes_status,
+                key=f"status_{equipamento_selecionado}_{idx}",
+                horizontal=True,
+                label_visibility="collapsed",
+            )
+
+        with col_obs:
+            obs = st.text_input(
+                "Observações",
+                key=f"obs_{equipamento_selecionado}_{idx}",
+                placeholder="Observações adicionais...",
+            )
+
+        respostas_temporarias.append(
+            {
+                "item_idx": idx,
+                "descricao": item,
+                "status_key": f"status_{equipamento_selecionado}_{idx}",
+                "obs_key": f"obs_{equipamento_selecionado}_{idx}",
+            }
+        )
+        st.markdown("<hr style='margin:5px 0;'>", unsafe_allow_html=True)
+
+    st.subheader("📌 Recomendações e Observações Gerais")
+    recomendacoes = st.text_area(
+        "Insira recomendações ou observações gerais:", key="rec_geral"
+    )
+
+    st.subheader("✍️ Assinaturas e Responsáveis")
+    col_resp1, col_resp2 = st.columns(2)
+    with col_resp1:
+        resp_inspecao = st.text_input(
+            "Responsável pela Inspeção (Nome):", key="resp_insp"
+        )
+    with col_resp2:
+        resp_equipamento = st.text_input(
+            "Responsável pelo Equipamento (Nome):", key="resp_eqp"
+        )
+
+    # --- Bloco de Assinatura Digital (Canvas) ---
+    st.markdown("#### 🖊️ Assinatura Digital do Inspetor")
+    st.markdown("Utilize o campo abaixo para desenhar a sua assinatura:")
+
+    canvas_result = st_canvas(
+        fill_color="rgba(255, 165, 0, 0.3)",
+        stroke_width=2,
+        stroke_color="#000000",
+        background_color="#FFFFFF",
+        height=150,
+        width=500,
+        drawing_mode="freedraw",
+        return_image_data=True,
+        key=f"canvas_assinatura_{equipamento_selecionado}",
+    )
+
+    submitted = st.form_submit_button("Gerar e Salvar Relatório Formatado")
+
+# --- PROCESSAR E SALVAR OS DADOS EM FORMATO DE FORMULÁRIO ---
+if submitted:
+    if not resp_inspecao.strip() or not resp_equipamento.strip():
+        st.warning(
+            "⚠️ Por favor, preencha os nomes dos responsáveis antes de gerar o relatório."
+        )
+    else:
+        respostas_finais = []
+        for item_info in respostas_temporarias:
+            status_atual = st.session_state.get(
+                item_info["status_key"], "ATENDE"
+            )
+            obs_atual = st.session_state.get(item_info["obs_key"], "")
+
+            respostas_finais.append(
+                {
+                    "Nº / Descrição do Item": item_info["descricao"],
+                    "Status": status_atual,
+                    "Observações": obs_atual,
+                }
+            )
+
+        df_respostas = pd.DataFrame(respostas_finais)
+
+        pasta_destino = "historico_geral"
+        os.makedirs(pasta_destino, exist_ok=True)
+
+        nome_equipamento_limpo = (
+            str(id_equipamento).replace(" ", "_").replace("/", "-")
+        )
+        if not nome_equipamento_limpo:
+            nome_equipamento_limpo = "geral"
+
+        nome_base = f"checklist_{equipamento_selecionado.replace(' ', '_')}_{nome_equipamento_limpo}_{data_inspecao}"
+        caminho_xlsx = os.path.join(pasta_destino, f"{nome_base}.xlsx")
+        caminho_consolidado = os.path.join(
+            pasta_destino, "Relatorio_Consolidado_Checklists.xlsx"
+        )
+
+        try:
+            # --- CONSTRUÇÃO DO FORMULÁRIO EXCEL FORMATADO ---
+            wb = Workbook()
+            ws = wb.active
+            ws.title = "Relatório de Inspeção"
+
+            # 1. Cabeçalho Principal
+            ws["A1"] = "SISTEMA DE CHECK LIST MENSAL DE EQUIPAMENTOS"
+            ws["A1"].font = openpyxl.styles.Font(size=14, bold=True)
+
+            # 2. Informações Gerais (Metadados)
+            ws["A3"] = "Local do Serviço:"
+            ws["B3"] = local_servico
+            ws["A4"] = "Equipamento:"
+            ws["B4"] = equipamento_selecionado
+            ws["A5"] = "ID / Prefixo:"
+            ws["B5"] = id_equipamento
+            ws["A6"] = "Data da Inspeção:"
+            ws["B6"] = str(data_inspecao)
+            ws["C3"] = "Periodicidade:"
+            ws["D3"] = periodicidade
+            ws["C4"] = "Revisão:"
+            ws["D4"] = revisao
+            ws["C5"] = "Cor de Liberação:"
+            ws["D5"] = cor_liberacao
+
+            # 3. Tabela de Itens (Linha 8 em diante)
+            ws["A8"] = "ITENS DE INSPEÇÃO"
+            ws["A8
