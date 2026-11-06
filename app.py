@@ -21,12 +21,10 @@ PASTA_DESTINO = "historico_geral"
 os.makedirs(PASTA_DESTINO, exist_ok=True)
 caminho_logo = os.path.join(PASTA_DESTINO, "logo_ellenco.png")
 
-# Cria e salva o arquivo de imagem do logo caso venha do upload/contexto
 img_logo_bytes = image_cadfa6
 with open(caminho_logo, "wb") as f:
     f.write(img_logo_bytes)
 
-# Exibe o logótipo na barra lateral do Streamlit
 with st.sidebar:
     if os.path.exists(caminho_logo):
         st.image(caminho_logo, use_column_width=True)
@@ -106,4 +104,10 @@ CHECKLISTS = {
         "22. Extintores e demais meios de emergência foram inspecionados, incluindo fixações e manutenção?",
         "23. Equipamentos de emergência, estepe e ferramentas estão completos e adequados, quando exigidos?",
         "24. Retrovisores, regulagens, fechaduras, vedações e vidros foram avaliados detalhadamente?",
-        "2
+        "25. Estrutura da caçamba, soldas, dobradiças, batentes e travas foram examinados?",
+        "26. Pinos, buchas, retenções, suportes e folgas foram inspecionados?",
+        "27. Sistema hidráulico de basculamento, vedação, mangueiras e cilindros foi inspecionado?",
+        "28. Escora/trava mecânica para caçamba elevada foi examinada, conforme fabricante?",
+        "29. Cobertura, acionamentos e fixações foram conferidos?",
+        "30. Suspensão, molas, amortecedores, buchas, suportes, terminais de direção, barras e articulações foram avaliados?",
+        "31. Linhas e reservatórios pneumáticos/hidráulicos de freio estão íntegros, com dren
