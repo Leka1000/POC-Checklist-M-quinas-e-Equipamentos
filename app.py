@@ -167,10 +167,8 @@ CHECKLISTS = {
         "1. Manuais, modificações autorizadas e plano de manutenção estão disponíveis e atualizados?",
         "2. Histórico de manutenção por horímetro, pendências e correções está atualizado?",
         "3. Periodicidade de inspeções técnicas indicada pelo fabricante está atendida?",
-        "4. "
-        "Identificação, faixas, avisos e símbolos estão completos e íntegros?",
-        "5. "
-        "Estrutura, suportes, soldas e fixações foram inspecionados quanto a trincas/deformações?",
+        "4. Identificação, faixas, avisos e símbolos estão completos e íntegros?",
+        "5. Estrutura, suportes, soldas e fixações foram inspecionados quanto a trincas/deformações?",
         "6. ROPS/FOPS, ancoragens e ausência de alterações não autorizadas foram conferidos?",
         "7. Tubulações, retentores, conexões, reservatórios e eventuais vazamentos foram avaliados?",
         "8. Proteções, suportes e intertravamentos foram avaliados quanto à integridade?",
@@ -180,8 +178,7 @@ CHECKLISTS = {
         "12. Braços, articulações, buchas e suportes foram avaliados?",
         "13. Trava de sustentação e instruções de bloqueio estão íntegras e identificadas?",
         "14. Fixadores estruturais, soldas e pontos de apoio foram inspecionados quanto a deformações?",
-        "15. "
-        "Pontos de lubrificação, mancais, buchas e pinos foram avaliados quanto à lubrificação e folgas?",
+        "15. Pontos de lubrificação, mancais, buchas e pinos foram avaliados quanto à lubrificação e folgas?",
         "16. Coifas, chapas e proteções de partes móveis foram avaliadas quanto à fixação e resistência?",
         "17. Instalação elétrica, bateria, proteção dos chicotes e conexões foram verificadas?",
         "18. Instrumentação, alertas e eventuais códigos de falha foram avaliados?",
@@ -192,8 +189,7 @@ CHECKLISTS = {
         "23. Degraus, superfícies antiderrapantes, corrimãos, soldas e fixações foram inspecionados?",
         "24. Vidros, espelhos, suportes, ajustes e visibilidade foram conferidos?",
         "25. Ancoragem, retrator, fecho, costuras e regulagem do cinto foram examinados?",
-        "26. "
-        "Assento, mecanismos de regulagem, fixações, vedações e condições ergonômicas foram avaliados?",
+        "26. Assento, mecanismos de regulagem, fixações, vedações e condições ergonômicas foram avaliados?",
         "27. Sistema de climatização e desembaçamento foi avaliado frente à NR-18 e à configuração?",
         "28. Sensores de ocupação, barra de retenção e lógica de intertravamento foram testados?",
         "29. Ancoragens do banco/cinto e elementos de cabine foram examinados quanto a folgas?",
@@ -206,8 +202,7 @@ CHECKLISTS = {
         "36. Motor, suportes, ruídos, vazamentos e sistema de arrefecimento foram examinados?",
         "37. Circuitos de segurança, partida e travamentos hidráulicos foram testados?",
         "38. Chaves gerais, sistemas de intertravamento e bloqueio elétrico estão identificados e íntegros?",
-        "39. "
-        "Foram registrados resultados de testes controlados de sensores/alertas e dos dispositivos corporativos aplicáveis?",
+        "39. Foram registrados resultados de testes controlados de sensores/alertas e dos dispositivos corporativos aplicáveis?",
         "40. Foi ensaiada a lógica de segurança de barra de retenção/ocupação segundo instruções do fabricante?",
         "41. Sistemas de freio, retenção e acionamentos foram submetidos a testes controlados?",
         "42. Comandos, intertravamentos e sistemas de direção/transmissão foram inspecionados?",
@@ -358,4 +353,110 @@ if submitted:
 
             # 3. Tabela de Itens (Linha 8 em diante)
             ws["A8"] = "ITENS DE INSPEÇÃO"
-            ws["A8
+            ws["A8"].font = openpyxl.styles.Font(bold=True)
+
+            headers = ["Nº / Descrição do Item", "Status", "Observações"]
+            for col_idx, header in enumerate(headers, start=1):
+                cell = ws.cell(row=9, column=col_idx)
+                cell.value = header
+                cell.font = openpyxl.styles.Font(bold=True)
+                cell.fill = openpyxl.styles.PatternFill(
+                    start_color="DDDDDD", end_color="DDDDDD", fill_type="solid"
+                )
+
+            row_idx = 10
+            for item in respostas_finais:
+                ws.cell(
+                    row=row_idx, column=1, value=item["Nº / Descrição do Item"]
+                )
+                ws.cell(row=row_idx, column=2, value=item["Status"])
+                ws.cell(row=row_idx, column=3, value=item["Observações"])
+                row_idx += 1
+
+            # 4. Observações Gerais e Responsáveis
+            row_idx += 1
+            ws.cell(
+                row=row_idx, column=1, value="Recomendações Gerais:"
+            ).font = openpyxl.styles.Font(bold=True)
+            ws.cell(row=row_idx + 1, column=1, value=recomendacoes)
+
+            row_idx += 4
+            ws.cell(
+                row=row_idx, column=1, value=f"Responsável Inspeção: {resp_inspecao}"
+            )
+            ws.cell(
+                row=row_idx,
+                column=3,
+                value=f"Responsável Equipamento: {resp_equipamento}",
+            )
+
+            # 5. Inserção da Assinatura Digital no Excel
+            if canvas_result.image_data is not None:
+                img_pil = Image.fromarray(
+                    canvas_result.image_data.astype("uint8")
+                )
+                caminho_img_temp = os.path.join(
+                    pasta_destino, f"{nome_base}_assinatura.png"
+                )
+                img_pil.save(caminho_img_temp)
+
+                row_idx += 2
+                ws.cell(
+                    row=row_idx,
+                    column=1,
+                    value="Assinatura Digital do Inspetor:",
+                )
+                img_excel = OpenpyxlImage(caminho_img_temp)
+                img_excel.width = 250
+                img_excel.height = 70
+                ws.add_image(img_excel, f"A{row_idx+1}")
+
+            # Salva o arquivo individual formatado
+            wb.save(caminho_xlsx)
+
+            # --- ATUALIZA O ARQUIVO ACUMULATIVO CONSOLIDADO ---
+            df_novo_registro = pd.DataFrame(
+                [
+                    {
+                        "Local": local_servico,
+                        "Equipamento": equipamento_selecionado,
+                        "ID/Prefixo": id_equipamento,
+                        "Data": str(data_inspecao),
+                        "Responsável Inspeção": resp_inspecao,
+                        "Responsável Equipamento": resp_equipamento,
+                        "Revisão": revisao,
+                    }
+                ]
+            )
+
+            if os.path.exists(caminho_consolidado):
+                df_antigo = pd.read_excel(caminho_consolidado)
+                df_final = pd.concat(
+                    [df_antigo, df_novo_registro], ignore_index=True
+                )
+            else:
+                df_final = df_novo_registro
+
+            df_final.to_excel(caminho_consolidado, index=False)
+
+            st.success("✅ Check List salvo no formato de formulário com sucesso!")
+            st.info(f"O arquivo formatado foi salvo em: **{caminho_xlsx}**")
+
+            st.subheader("📊 Visualização dos Itens Preenchidos")
+            st.dataframe(df_respostas, use_container_width=True)
+
+            # --- BOTÃO DE DOWNLOAD DO RELATÓRIO FORMATADO ---
+            with open(caminho_xlsx, "rb") as f:
+                excel_bytes = f.read()
+
+            st.download_button(
+                label="📥 Baixar Relatório em Excel (Formato Original)",
+                data=excel_bytes,
+                file_name=f"{nome_base}.xlsx",
+                mime=(
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                ),
+            )
+
+        except Exception as e:
+            st.error(f"Erro ao tentar formatar e salvar o arquivo em Excel: {e}")
